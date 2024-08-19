@@ -1,76 +1,79 @@
 import React, { useEffect, useRef } from "react";
-import gsap from "gsap";
-import { ScrollTrigger, ScrollToPlugin } from "gsap";
-import SmoothScroll from "@/components/SmoothScroll";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
+import Lenis from "lenis";
 import Image from "next/image";
-import Logo from "@/public/Group 3005.svg";
 import SvgTransition from "@/components/SvgTransition";
+import Logo from "@/public/Group 3005.svg";
 
-gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
+gsap.registerPlugin(ScrollTrigger);
 
 const Home = () => {
-  const containerRef = useRef(null);
+  const sectionRef = useRef(null);
+  const triggerRef = useRef(null);
   const containerRef1 = useRef(null);
 
   useEffect(() => {
-    const handleScroll = () => {
-      const scrollY = window.scrollY;
-      const maxScrollY = document.body.scrollHeight - window.innerHeight;
-      const scrollPercentage = scrollY / maxScrollY;
+    const lenis = new Lenis({
+      smoothWheel: true,
+      lerp: 0.1,
+      duration: 1.2,
+    });
 
-      const scrollWidth = containerRef.current.scrollWidth;
-      const scrollLeft = scrollPercentage * (scrollWidth - window.innerWidth);
+    function raf(time) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
 
-      gsap.to(containerRef.current, {
-        x: -scrollLeft,
-        duration: 0.2,
-        delay: 3,
-        ease: "power3.out",
-        overwrite: "auto",
-      });
-    };
-
-    window.addEventListener("scroll", handleScroll);
+    requestAnimationFrame(raf);
 
     return () => {
-      window.removeEventListener("scroll", handleScroll);
+      lenis.destroy();
     };
   }, []);
 
   useEffect(() => {
-    const onScroll = (event) => {
-      gsap.to(containerRef1.current, {
-        // gsap.to("#zoomable-logo", {
-        scale: 200,
+    const pin = gsap.fromTo(
+      sectionRef.current,
+      {
+        translateX: 0,
+      },
+      {
+        translateX: "-400vw",
+        ease: "none",
+        duration: 1,
         scrollTrigger: {
-          trigger: "#zoomable-logo",
-          start: "top 75%",
-          end: "bottom left +=500 +=500",
-          //scrub: true,
-          // snap: {
-          //   snapTo: "labels",
-          //   duration: { min: 0.2, max: 10 },
-          //   delay: 3,
-          // },
+          trigger: triggerRef.current,
+          start: "top top",
+          end: "80% top",
+          scrub: 0.6,
+          pin: true,
         },
-      });
-    };
-    window.addEventListener("scroll", onScroll);
-
-    // Clean up event listener on component unmount
+      }
+    );
     return () => {
-      window.removeEventListener("scroll", onScroll);
+      pin.kill();
     };
-    // window.addEventListener("wheel", onScroll);
-    // return () => {
-    //   window.removeEventListener("wheel", onScroll);
-    // };
+  }, []);
+
+  useEffect(() => {
+    gsap.to(containerRef1.current, {
+      scale: 200, // Scale to a high value to make it vanish
+      transformOrigin: "center center", // Zooms from the center
+      duration: 3, // Adjust duration to control the speed of zoom
+      ease: "power1.inOut", // Smooth easing
+      scrollTrigger: {
+        trigger: "#zoomable-logo",
+        start: "top 25%",
+        end: "100% top",
+        scrub: true,
+      },
+    });
   }, []);
 
   return (
-    <div className="overflow-x-hidden">
-      <SmoothScroll />
-      <div className="relative h-screen bg-black overflow-x-hidden overflow-y-hidden">
+    <>
+      <div className="relative h-screen w-full bg-black overflow-x-hidden overflow-y-hidden">
         <svg
           ref={containerRef1}
           id="zoomable-logo"
@@ -126,39 +129,55 @@ const Home = () => {
           </g>
         </svg>
       </div>
-      <div className="App">
-        <div
-          ref={containerRef}
-          className="flex h-[100vh] w-[400vw] scroll-snap-container"
-        >
-          <section className="flex-shrink-0 w-screen h-screen bg-black text-[#BE9F56] flex items-center justify-center scroll-snap-start">
-            <Image src={Logo} />
-            <div class="text-center mx-3 lg:text-[25px] 2xl:text-[30px] tracking-wider uppercase">
-              <p>We are the global platform.</p>
-              <p class="mt-3">
-                Services in over one hundred and twenty countries.
-              </p>
+      <section className="scroll-section-outer overflow-hidden">
+        <div ref={triggerRef}>
+          <div
+            ref={sectionRef}
+            className="scroll-section-inner h-screen w-[2000vw] flex flex-row relative"
+          >
+            <div className="scroll-section h-screen w-screen flex justify-center items-center relative">
+              <section className="flex-shrink-0 w-screen h-screen bg-black text-[#BE9F56] flex items-center justify-center scroll-snap-start">
+                <Image src={Logo} />
+                <div class="text-center mx-3 lg:text-[25px] 2xl:text-[30px] tracking-wider uppercase">
+                  <p>We are the global platform.</p>
+                  <p class="mt-3">
+                    Services in over one hundred and twenty countries.
+                  </p>
+                </div>
+              </section>
             </div>
-          </section>
-          <section className="flex-shrink-0 w-screen h-screen bg-[#737373] text-white flex flex-col items-center justify-center scroll-snap-start">
-            <h2 class="text-[25px] font-normal uppercase tracking-wider">
-              Bringing the world closer together.
-            </h2>{" "}
-            <Image src={Logo} />
-          </section>
-          <section className="flex-shrink-0 w-screen h-screen bg-[#BE9F56] text-white flex items-center justify-center scroll-snap-start">
-            <div class="flex justify-center items-center min-h-screen relative z-10">
-              <h4 class="text-[16px] lg:text-[25px] text-center uppercase text-white tracking-wider ">
-                A REAL ESTATE AND PROPERTY PLATFORM THAT WILL CHANGE THE WORLD.
-              </h4>
+            <div className="scroll-section h-screen w-screen flex justify-center items-center relative">
+              <section className="flex-shrink-0 w-screen h-screen bg-[#737373] text-white flex flex-col items-center justify-center scroll-snap-start">
+                <h2 class="text-[25px] font-normal uppercase tracking-wider">
+                  Bringing the world closer together.
+                </h2>
+                <Image src={Logo} />
+              </section>
             </div>
-          </section>
-          <section className="flex-shrink-0 w-screen h-screen bg-black text-white flex items-center justify-center scroll-snap-start">
-            <SvgTransition />
-          </section>
+            <div className="scroll-section h-screen w-screen flex justify-center items-center relative">
+              <section className="flex-shrink-0 w-screen h-screen bg-[#BE9F56] text-white flex items-center justify-center scroll-snap-start">
+                <div class="flex justify-center items-center min-h-screen relative z-10">
+                  <h4 class="text-[16px] lg:text-[25px] text-center uppercase text-white tracking-wider ">
+                    A REAL ESTATE AND PROPERTY PLATFORM THAT WILL CHANGE THE
+                    WORLD.
+                  </h4>
+                </div>
+              </section>
+            </div>
+            <div className="scroll-section h-screen w-screen flex justify-center items-center relative">
+              <section className="flex-shrink-0 w-screen h-screen bg-black text-white flex items-center justify-center scroll-snap-start">
+                <SvgTransition />
+              </section>
+            </div>
+            <div className="scroll-section h-screen w-screen flex justify-center items-center relative">
+              <section className="flex-shrink-0 w-screen h-screen bg-black text-white flex items-center justify-center scroll-snap-start">
+                <Image src={Logo} />
+              </section>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
+      </section>
+    </>
   );
 };
 
