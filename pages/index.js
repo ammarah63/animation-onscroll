@@ -56,28 +56,37 @@ const Home = () => {
     };
   }, []);
 
-  useEffect(() => {
-    gsap.to(containerRef1.current, {
-      scale: 200, // Scale to a high value to make it vanish
-      transformOrigin: "center center", // Zooms from the center
-      duration: 3, // Adjust duration to control the speed of zoom
-      ease: "power1.inOut", // Smooth easing
+useEffect(() => {
+  gsap.fromTo(
+    containerRef1.current,
+    { scale: 1 }, // Initial scale
+    {
+      scale: 200, // Final scale
+      transformOrigin: "center center",
+      duration: 3,
+      ease: "power1.inOut",
       scrollTrigger: {
         trigger: "#zoomable-logo",
-        start: "top 25%",
-        end: "100% top",
         scrub: true,
+        start: "top top",
+        end: "+=100% 0",
+        pin: true,
+        markers: true,
       },
-    });
-  }, []);
+    }
+  );
+}, []);
+
 
   return (
     <>
-      <div className="relative h-screen w-full bg-black overflow-x-hidden overflow-y-hidden">
+      <div
+        id="zoomable-logo"
+        className="relative h-screen w-full bg-black overflow-x-hidden overflow-y-hidden"
+      >
         <svg
           ref={containerRef1}
-          id="zoomable-logo"
-          className="logo absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 h-12 text-white"
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[284px] text-white"
           xmlns="http://www.w3.org/2000/svg"
           width="184.896"
           height="50"
