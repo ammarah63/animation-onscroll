@@ -56,27 +56,26 @@ const Home = () => {
     };
   }, []);
 
-useEffect(() => {
-  gsap.fromTo(
-    containerRef1.current,
-    { scale: 1 }, // Initial scale
-    {
-      scale: 200, // Final scale
-      transformOrigin: "center center",
-      duration: 3,
-      ease: "power1.inOut",
-      scrollTrigger: {
-        trigger: "#zoomable-logo",
-        scrub: true,
-        start: "top top",
-        end: "+=100% 0",
-        pin: true,
-        markers: true,
-      },
-    }
-  );
-}, []);
-
+  useEffect(() => {
+    gsap.fromTo(
+      containerRef1.current,
+      { scale: 1 }, // Initial scale
+      {
+        scale: 200, // Final scale
+        transformOrigin: "center center",
+        duration: 10,
+        ease: "power1.inOut",
+        scrollTrigger: {
+          trigger: "#zoomable-logo",
+          scrub: 1,
+          start: "top top",
+          end: "+=100% 0",
+          pin: true,
+          markers: true,
+        },
+      }
+    );
+  }, []);
 
   return (
     <>
